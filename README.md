@@ -47,10 +47,8 @@ You will need to complete these steps **twice**: once for the backend and once f
 1. Add these commands to the `scripts` property of your `package.json':
 
    ```json
-   {
-     "lint": "npx eslint --cache --fix --report-unused-disable-directives . && prettier --write .",
-     "lint-check": "npx eslint --cache --report-unused-disable-directives . && prettier --check ."
-   }
+   "lint": "npx eslint --cache --fix --report-unused-disable-directives . && prettier --write .",
+   "lint-check": "npx eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
 
 1. Try it out:
