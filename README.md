@@ -44,10 +44,13 @@ You will need to complete these steps **twice**: once for the backend and once f
    npx eslint --init
    ```
 
-1. Add this command to the `scripts` property of your `package.json':
+1. Add these commands to the `scripts` property of your `package.json':
 
    ```json
-   "lint": "npx eslint --cache --fix --report-unused-disable-directives . && prettier --write ."
+   {
+     "lint": "npx eslint --cache --fix --report-unused-disable-directives . && prettier --write .",
+     "lint-check": "npx eslint --cache --report-unused-disable-directives . && prettier --check ."
+   }
    ```
 
 1. Try it out:
@@ -56,8 +59,12 @@ You will need to complete these steps **twice**: once for the backend and once f
    npm run lint
    ```
 
+## CircleCI Configuration
+
+See the [`sample config.yml`](.circleci/config.yml). You'll need to change the directory names for the frontend and backend if they're different for your project.
+
 ## To Do
 
 1. Add instructions for setting up a local Git hook. Ideally, this would be set up when someone clones the repo and runs `npm install` in *either* the frontend or backend directories.
+1. Test the ESLint configuration on more code from past projects.
 1. Improve README.
-1. Add instructions for setting up CI/CD.

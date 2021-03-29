@@ -1,0 +1,12 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.2.0
+workflows:
+  node-tests:
+    jobs:
+      - node/test:
+          app-dir: backend
+          run-command: lint-check
+      - node/test:
+          app-dir: frontend
+          run-command: lint-check

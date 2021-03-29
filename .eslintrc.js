@@ -74,13 +74,12 @@ function usingReact() {
  */
 function generateRules() {
   const rules = { ...generalRules };
+  Object.assign(rules, getAllowForOfRules());
 
   if (usingReact()) {
     Object.assign(rules, reactRules);
     Object.assign(rules, getAccessibilityWarningRules());
   }
-
-  Object.assign(rules, getAllowForOfRules());
 
   return rules;
 }
