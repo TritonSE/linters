@@ -29,13 +29,13 @@ You will need to complete these steps **twice**: once for the backend and once f
    1. Backend:
 
       ```sh
-      npm install --save-dev eslint eslint-config-airbnb-base eslint-config-prettier prettier
+      npm install --save-dev eslint eslint-config-airbnb-base eslint-plugin-import eslint-config-prettier prettier
       ```
 
    1. Frontend (note that `create-react-app` should have installed `eslint` already):
 
       ```sh
-      npm install --save-dev eslint-config-airbnb eslint-config-prettier prettier
+      npm install --save-dev eslint-config-airbnb eslint-plugin-import eslint-config-prettier prettier
       ```
 
 1. Run this command and answer the prompts appropriately for your backend or frontend. When prompted to select the config file format, **choose JSON**:
