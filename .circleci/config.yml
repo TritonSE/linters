@@ -5,8 +5,10 @@ workflows:
   node-tests:
     jobs:
       - node/test:
+          name: Backend lint and style check
           app-dir: backend
           run-command: lint-check
       - node/test:
+          name: Frontend lint and style check
           app-dir: frontend
           run-command: lint-check
