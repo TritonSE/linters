@@ -107,7 +107,7 @@ module.exports = {
     },
   },
   ...jsonConfig,
-  ...(usingReact() ? { parser: "babel-eslint" } : {}),
+  ...(usingReact() ? { parser: "@babel/eslint-parser" } : {}),
   extends: [
     "eslint:recommended",
     usingReact() ? "airbnb" : "airbnb-base",
