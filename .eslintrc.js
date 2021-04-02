@@ -13,8 +13,7 @@ const generalRules = {
 
   /**
    * Unused variables and arguments should be removed in most cases, but sometimes they are
-   * unavoidable (like `next` in an Express callback). Prefix variable names with an
-   * underscore to suppress the error.
+   * unavoidable. Prefix variable names with an underscore to suppress the error.
    */
   "no-unused-vars": [
     "error",
