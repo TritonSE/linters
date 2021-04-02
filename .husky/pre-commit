@@ -20,7 +20,7 @@ die() {
 
 for dir in "${node_dirs[@]}"; do
 	[ -d "${dir}" ] || die "Directory '${dir}' does not exist. Edit this script and change 'node_dirs'."
-	(cd "${dir}" && "${lint_command[@]}") || die "Fix lint errors before committing."
+	(cd "${dir}" && "${lint_command[@]}") || die "Fix lint errors before committing, or use --no-verify."
 done
 
 log "Lint check passed."
