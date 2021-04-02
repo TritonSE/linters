@@ -23,13 +23,15 @@ You will need to complete these steps **twice**: once for the backend and once f
    1. Backend:
 
       ```sh
-      npm install --save-dev eslint eslint-config-airbnb-base eslint-plugin-import eslint-config-prettier prettier
+      npm install --save-dev eslint eslint-config-airbnb-base eslint-config-prettier prettier $(npm info "eslint-config-airbnb-base@latest" peerDependencies | grep -Eo "'?[^':]+'?:" | tr -d " :'")
       ```
+
+      (The part of the command in `$( ... )` retrieves the peer dependencies for `eslint-config-airbnb-base`.)
 
    1. Frontend (note that `create-react-app` should have installed `eslint` already):
 
       ```sh
-      npm install --save-dev eslint-config-airbnb eslint-plugin-import @babel/eslint-parser eslint-config-prettier prettier
+      npm install --save-dev eslint-config-airbnb @babel/eslint-parser eslint-config-prettier prettier $(npm info "eslint-config-airbnb@latest" peerDependencies | grep -Eo "'?[^':]+'?:" | tr -d " :'")
       ```
 
 1. Initialize a barebones ESLint config file with project-specific settings:
