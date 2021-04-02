@@ -59,6 +59,8 @@ You will need to complete these steps **twice**: once for the backend and once f
 
    If you answer a prompt incorrectly, you can simply rerun the command to try again.
 
+   If your frontend is in a subdirectory of the backend, you'll need to add `"root": true` to your `.eslintrc.json` to avoid using the backend's ESLint config for the frontend. See [this link](https://eslint.org/docs/user-guide/configuring/configuration-files#cascading-and-hierarchy) for more details.
+
 1. Download the ESLint and Prettier config files from this repo:
 
    ```sh
