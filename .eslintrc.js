@@ -25,6 +25,9 @@ const generalRules = {
       varsIgnorePattern: "^_",
     },
   ],
+
+  // Not necessary for some APIs (consistency reasons)
+  "import/prefer-default-export": "off",
 };
 
 const reactRules = {
@@ -70,7 +73,9 @@ function loadConfig() {
   try {
     return JSON.parse(readFileSync(path, "utf8"));
   } catch (e) {
-    throw new Error(`File '${path}' does not exist. Generate it by running 'npx eslint --init'. When prompted to choose the file format, select JSON.`);
+    throw new Error(
+      `File '${path}' does not exist. Generate it by running 'npx eslint --init'. When prompted to choose the file format, select JSON.`
+    );
   }
 }
 
@@ -89,29 +94,29 @@ function usingReact() {
 function generateRules() {
   const rules = { ...generalRules };
   Object.assign(rules, getAllowForOfRules());
-
   if (usingReact()) {
     Object.assign(rules, reactRules);
     Object.assign(rules, getAccessibilityWarningRules());
   }
-
   return rules;
 }
 
-const rules = generateRules();
-
-module.exports = {
-  settings: {
-    react: {
-      version: "detect",
+if (process.env.NODE_ENV === "production") {
+  // In production (e.g. on Heroku), sometimes dev-dependencies are not installed
+  // This results in errors with the rule generation process
+  // Since linting isn't necessary in production, we can just ignore it
+  module.exports = {};
+} else {
+  const rules = generateRules();
+  module.exports = {
+    settings: {
+      react: {
+        version: "detect",
+      },
     },
-  },
-  ...jsonConfig,
-  ...(usingReact() ? { parser: "@babel/eslint-parser" } : {}),
-  extends: [
-    "eslint:recommended",
-    usingReact() ? "airbnb" : "airbnb-base",
-    "prettier"
-  ],
-  rules,
-};
+    ...jsonConfig,
+    ...(usingReact() ? { parser: "babel-eslint" } : {}),
+    extends: ["eslint:recommended", usingReact() ? "airbnb" : "airbnb-base", "prettier"],
+    rules,
+  };
+}
