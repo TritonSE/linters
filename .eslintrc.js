@@ -11,6 +11,9 @@ const generalRules = {
   // Some APIs use snake_case identifiers.
   "camelcase": "off",
 
+  // Depending on the context, using bracket notation might be clearer.
+  "dot-notation": "off",
+
   /**
    * Unused variables and arguments should be removed in most cases, but sometimes they are
    * unavoidable. Prefix variable names with an underscore to suppress the error.
