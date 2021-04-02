@@ -66,6 +66,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 1. Add the `lint` and `lint-check` commands to your `package.json`:
 
    ```sh
+   npm set-script format "prettier --write ."
    npm set-script lint "eslint --fix --cache --report-unused-disable-directives . && prettier --write ."
    npm set-script lint-check "eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
