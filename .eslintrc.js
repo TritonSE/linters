@@ -5,6 +5,12 @@ const { readFileSync } = require("fs");
 const generalRules = {
   "no-plusplus": "off",
 
+  // Allow leading underscores in identifiers (e.g. _id in MongoDB).
+  "no-underscore-dangle": "off",
+
+  // Some APIs use snake_case identifiers.
+  "camelcase": "off",
+
   /**
    * Unused variables and arguments should be removed in most cases, but sometimes they are
    * unavoidable (like `next` in an Express callback). Prefix variable names with an
@@ -22,6 +28,12 @@ const generalRules = {
 const reactRules = {
   "react/jsx-filename-extension": "off",
   "react/prop-types": "off",
+  "react/destructuring-assignment": "off",
+
+  "react/sort-comp": "warn",
+
+  // Use warnings instead of errors for issues that aren't deal-breakers.
+  "react/prefer-stateless-function": "warn",
   "react/no-array-index-key": "warn",
 };
 
@@ -93,6 +105,7 @@ module.exports = {
     },
   },
   ...jsonConfig,
+  ...(usingReact() ? { parser: "babel-eslint" } : {}),
   extends: [
     "eslint:recommended",
     usingReact() ? "airbnb" : "airbnb-base",
