@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Directories containing Node.js projects to be linted.
+node_dirs=(backend frontend)
+
+# Command to run in each directory specified in node_dirs.
+lint_command=(npm run lint)
+
+# Uncomment the line below to disable linting.
+#lint_command=(true)
+
+log() {
+	echo "${0}:" "${@}" >&2
+}
+
+die() {
+	log "${@}"
+	exit 1
+}
+
+for dir in "${node_dirs[@]}"; do
+	[ -d "${dir}" ] || die "Directory '${dir}' does not exist. Edit this script and change 'node_dirs'."
+	(cd "${dir}" && "${lint_command[@]}") || die "Fix lint errors before committing."
+done
+
+log "Lint check passed."
