@@ -121,7 +121,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
       If the lint check passes, you should see a message to that effect, and you should be able to commit. Otherwise, you should see a list of lint errors, and the commit should be aborted.
 
-   1. Stage and commit the `.husky` directory.
+1. Stage and commit the `.husky` directory, along with your `package.json` and `package-lock.json` for the backend and frontend.
 
 ## CircleCI Configuration
 
