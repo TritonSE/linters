@@ -63,13 +63,15 @@ You will need to complete these steps **twice**: once for the backend and once f
    for file in .eslintrc.js .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
-1. Add the `lint` and `lint-check` commands to your `package.json`:
+1. Add these scripts to your `package.json`:
 
    ```sh
    npm set-script format "prettier --write ."
    npm set-script lint "eslint --fix --cache --report-unused-disable-directives . && prettier --write ."
    npm set-script lint-check "eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
+
+   `npm run format` reformats your code without doing any linting. `npm run lint` lints and reformats; this is intended for a Git pre-commit hook. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for CI/CD checks.
 
 1. Try it out:
 
