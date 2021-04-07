@@ -59,7 +59,19 @@ You will need to complete these steps **twice**: once for the backend and once f
 
    If you answer a prompt incorrectly, you can simply rerun the command to try again.
 
-   If your frontend is in a subdirectory of the backend, you'll need to add `"root": true` to your `.eslintrc.json` to avoid using the backend's ESLint config for the frontend. See [this link](https://eslint.org/docs/user-guide/configuring/configuration-files#cascading-and-hierarchy) for more details.
+1. If your frontend is in a subdirectory of the backend, you'll need to follow some additional instructions to ensure that the frontend and backend are linted separately.
+
+   1. Frontend:
+
+      Add `"root": true` to your `.eslintrc.json` to avoid using the backend's ESLint config for the frontend. See [this link](https://eslint.org/docs/user-guide/configuring/configuration-files#cascading-and-hierarchy) for more details.
+
+   1. Backend:
+
+      Add the frontend directory to an `.eslintignore` file (replace `frontend` with the name of your frontend directory):
+
+      ```sh
+      echo frontend >> .eslintignore
+      ```
 
 1. Download the ESLint and Prettier config files from this repo:
 
