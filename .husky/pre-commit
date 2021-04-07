@@ -4,7 +4,7 @@
 node_dirs=(backend frontend)
 
 # Command to run in each directory specified in node_dirs.
-lint_command=(npm run lint)
+lint_command=(npm run lint-check)
 
 # Uncomment the line below to disable linting.
 #lint_command=(true)
@@ -18,9 +18,67 @@ die() {
 	exit 1
 }
 
-for dir in "${node_dirs[@]}"; do
-	[ -d "${dir}" ] || die "Directory '${dir}' does not exist. Edit this script and change 'node_dirs'."
-	(cd "${dir}" && "${lint_command[@]}") || die "Fix lint errors before committing, or use --no-verify."
-done
+num_stashes() {
+	git stash list | wc -l
+}
 
-log "Lint check passed."
+# Make the working directory match the staging area.
+stash_push() {
+	log "Stashing unstaged changes."
+
+	local stashes_before=$(num_stashes)
+	git stash push --include-untracked --keep-index
+	local stashes_after=$(num_stashes)
+
+	case "$(( stashes_after - stashes_before ))" in
+		1)
+			log "Stashing successful."
+			return 0
+			;;
+		0)
+			log "Nothing to stash."
+			return 1
+			;;
+		*)
+			die "Something unexpected occurred." \
+				"There used to be ${stashes_before} stash entries;" \
+				"now there are ${stashes_after}." \
+				"You'll need to manually recover your changes from the stash."
+			;;
+	esac
+}
+
+# Restore unstaged changes to the working directory.
+stash_pop() {
+	log "Restoring unstaged changes."
+
+	if git stash pop; then
+		log "Unstaged changes restored."
+		return 0
+	else
+		die "An unexpected error occurred." \
+			"Resolve the conflicts by hand, then run 'git stash drop'."
+	fi
+}
+
+main() {
+	stash_push
+	local stash_push_status="${?}"
+
+	for dir in "${node_dirs[@]}"; do
+		[ -d "${dir}" ] || die \
+			"Directory '${dir}' does not exist." \
+			"Edit this script and change 'node_dirs'."
+
+		(cd "${dir}" && "${lint_command[@]}") || die \
+			"Lint check failed." \
+			"Run 'npm run lint-fix', then manually fix any remaining errors." \
+			"To skip this lint check, use 'git commit --no-verify'."
+	done
+
+	log "Lint check passed."
+
+	(( stash_push_status == 0 )) && stash_pop
+}
+
+main "${@}"

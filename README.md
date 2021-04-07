@@ -71,16 +71,16 @@ You will need to complete these steps **twice**: once for the backend and once f
 
    ```sh
    npm set-script format "prettier --write ."
-   npm set-script lint "eslint --fix --cache --report-unused-disable-directives . && prettier --write ."
+   npm set-script lint-fix "eslint --fix --cache --report-unused-disable-directives . ; prettier --write ."
    npm set-script lint-check "eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
 
-   `npm run format` reformats your code without doing any linting. `npm run lint` lints and reformats; this is intended for a Git pre-commit hook. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for CI/CD checks.
+   `npm run format` reformats your code without doing any linting. `npm run lint-fix` automatically fixes some lint errors and reformats the code. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for a Git pre-commit hook or a CI/CD check.
 
 1. Try it out:
 
    ```sh
-   npm run lint
+   npm run lint-check
    ```
 
 1. Stage and commit the modified files (`.eslintrc.js .eslintrc.json .prettierrc.json package.json package-lock.json`).
