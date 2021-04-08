@@ -147,7 +147,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 ## CircleCI Configuration
 
-See the [`sample config.yml`](.circleci/config.yml). You'll need to change the directory names for the frontend and backend if they're different for your project.
+See the [sample `config.yml`](.circleci/config.yml). You'll need to change the directory names for the frontend and backend if they're different for your project.
 
 ## To Do
 
