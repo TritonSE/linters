@@ -75,6 +75,12 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 1. Download the config files from this repo:
 
+   1. Backend:
+
+      ```sh
+      for file in .eslintrc.js .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+      ```
+
    1. Frontend:
 
       ```sh
@@ -82,12 +88,6 @@ You will need to complete these steps **twice**: once for the backend and once f
       ```
 
       > Our ESLint config is stricter than the one that comes with Create React App, so it will produce errors instead of warnings in many cases. However, the default webpack configuration causes the build to fail when there are lint errors. The environment variable in `.env.development` fixes this by treating errors as warnings. Make sure that this file is committed to Git; [it is safe to do so](https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env). Note that this functionality requires a recent version of `react-scripts`, so you may have to update that package to 4.0.3+. If it still doesn't work, try deleting `node_modules` and trying again, since old versions of `node_modules/react-scripts/config/webpack.config.js` don't load this environment variable.
-
-   1. Backend:
-
-      ```sh
-      for file in .eslintrc.js .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
-      ```
 
 1. Add these scripts to your `package.json`:
 
