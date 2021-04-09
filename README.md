@@ -61,10 +61,6 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 1. If your frontend is in a subdirectory of the backend, you'll need to follow some additional instructions to ensure that the frontend and backend are linted separately.
 
-   1. Frontend:
-
-      Add `"root": true` to your `.eslintrc.json` to avoid using the backend's ESLint config for the frontend. See [this link](https://eslint.org/docs/user-guide/configuring/configuration-files#cascading-and-hierarchy) for more details.
-
    1. Backend:
 
       Add the frontend directory to an `.eslintignore` file (replace `frontend` with the name of your frontend directory):
@@ -72,6 +68,10 @@ You will need to complete these steps **twice**: once for the backend and once f
       ```sh
       echo frontend >> .eslintignore
       ```
+
+   1. Frontend:
+
+      Add `"root": true` to your `.eslintrc.json` to avoid using the backend's ESLint config for the frontend. See [this link](https://eslint.org/docs/user-guide/configuring/configuration-files#cascading-and-hierarchy) for more details.
 
 1. Download the config files from this repo:
 
