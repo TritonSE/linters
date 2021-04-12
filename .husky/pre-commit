@@ -27,7 +27,7 @@ stash_push() {
 	log "Stashing unstaged changes."
 
 	local stashes_before=$(num_stashes)
-	git stash push --include-untracked --keep-index --quiet
+	git stash push --include-untracked --keep-index &> /dev/null
 	local stashes_after=$(num_stashes)
 
 	case "$(( stashes_after - stashes_before ))" in
@@ -52,7 +52,7 @@ stash_push() {
 stash_pop() {
 	log "Restoring unstaged changes."
 
-	if git stash pop --quiet; then
+	if git stash pop &> /dev/null; then
 		log "Unstaged changes restored."
 		return 0
 	else
