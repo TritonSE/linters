@@ -71,7 +71,8 @@ lint_check() {
 
 		if ! (cd "${dir}" && "${lint_command[@]}"); then
 			log "Lint check failed." \
-				"Run 'npm run lint-fix', then manually fix any remaining errors." \
+				"Run 'npm run lint-fix', then manually fix any remaining errors," \
+				"and stage those changes." \
 				"To skip this lint check, use 'git commit --no-verify'."
 			return 1
 		fi
