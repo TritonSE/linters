@@ -52,7 +52,7 @@ You will need to complete these steps **twice**: once for the backend and once f
      <dt>Does your project use TypeScript?</dt>
      <dd>Answer as appropriate.</dd>
      <dt>Where does your code run?</dt>
-     <dd>Answer as appropriate. It will probably only be one of the two; you can press `i` to toggle.</dd>
+     <dd>Answer as appropriate. It will probably only be one of the two; you can press <kbd>i</kbd> to toggle.</dd>
      <dt>What format do you want your config file to be in?</dt>
      <dd>JSON</dd>
    </dl>
