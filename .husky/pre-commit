@@ -83,7 +83,13 @@ lint_check() {
 }
 
 main() {
-	stash_push && trap stash_pop EXIT
+	if [ -f '.git/MERGE_HEAD' ]; then
+		log "WARNING: unable to stash unstaged changes during merge." \
+			"If there are unstaged changes, they may result in an" \
+			"incorrect lint check result."
+	else
+		stash_push && trap stash_pop EXIT
+	fi
 
 	lint_check
 }
