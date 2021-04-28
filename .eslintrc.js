@@ -14,7 +14,10 @@ const generalRules = {
   // Depending on the context, using bracket notation might be clearer.
   "dot-notation": "off",
 
-  // Allow reassignment of function parameters.
+  /**
+   * Reassigning parameters can be useful to avoid creating another variable,
+   * and to modify objects by reference.
+   */
   "no-param-reassign": "off",
 
   /**
@@ -38,9 +41,14 @@ const reactRules = {
   "react/prop-types": "off",
   "react/destructuring-assignment": "off",
 
-  "react/sort-comp": "warn",
+  // Allow prop spreading, but require explicit spreading for HTML tags.
+  "react/jsx-props-no-spreading": [
+    2,
+    { html: "enforce", custom: "ignore", explicitSpread: "ignore" },
+  ],
 
   // Use warnings instead of errors for issues that aren't deal-breakers.
+  "react/sort-comp": "warn",
   "react/prefer-stateless-function": "warn",
   "react/no-array-index-key": "warn",
 };
