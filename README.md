@@ -113,6 +113,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
    ```sh
    npm install --save-dev husky
+   # Delete "cd .. &&" from the next line if the package is in the root directory
    npm set-script prepare "cd .. && husky install .husky"
    npm run prepare
    ```
