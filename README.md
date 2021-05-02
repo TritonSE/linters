@@ -93,9 +93,11 @@ You will need to complete these steps **twice**: once for the backend and once f
 
    ```sh
    npm set-script format "prettier --write ."
-   npm set-script lint-fix "eslint --fix --cache --report-unused-disable-directives . ; prettier --write ."
+   npm set-script lint-fix "(eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
    npm set-script lint-check "eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
+
+   > Ideally, instead of `(eslint ... || true) && prettier ...`, we would use `eslint ... ; prettier ...`. However, there are some issues with using the semicolon as a command separator in Git Bash on Windows. See [this article](https://medium.com/@chillypenguin/running-node-npm-scripts-sequentially-on-windows-8737dc24da1f) for more details.
 
    `npm run format` reformats your code without doing any linting. `npm run lint-fix` automatically fixes some lint errors and reformats the code. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for a Git pre-commit hook or a CI/CD check.
 
