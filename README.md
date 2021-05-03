@@ -1,5 +1,21 @@
 # Linters
 
+## Troubleshooting
+
+### General Instructions
+
+Make sure you ran `npm install` in _every_ directory of the project (backend and frontend).
+
+### Specific Problems
+
+#### On Windows, after running Prettier, there are still style issues.
+
+This might be caused by Git converting the line endings to CRLF when Prettier expects LF. Try running `git config core.autocrlf false`.
+
+#### In Git Bash, `npm run lint-fix` gives a strange error about `invalid option '--write'`.
+
+This occurs because Git Bash doesn't properly parse the semicolon as a command separator. I added a workaround for this issue in [this commit](https://github.com/TritonSE/linters/commit/297c448380edf4755e8373cf1a52a028f50244a8), so if you have an older version, try repeating [this step](#add-npm-scripts) in the backend and frontend directories.
+
 ## `.gitignore`
 
 Initialize your repository's `.gitignore` with the Node.js template from [`github/gitignore`](https://github.com/github/gitignore):
@@ -89,7 +105,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
       > Our ESLint config is stricter than the one that comes with Create React App, so it will produce errors instead of warnings in many cases. However, the default webpack configuration causes the build to fail when there are lint errors. The environment variable in `.env.development` fixes this by treating errors as warnings. Make sure that this file is committed to Git; [it is safe to do so](https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env). Note that this functionality requires a recent version of `react-scripts`, so you may have to update that package to 4.0.3+. If it still doesn't work, try deleting `node_modules` and trying again, since old versions of `node_modules/react-scripts/config/webpack.config.js` don't load this environment variable.
 
-1. Add these scripts to your `package.json`:
+1. <span id="add-npm-scripts"></span>Add these scripts to your `package.json`:
 
    ```sh
    npm set-script format "prettier --write ."
@@ -115,7 +131,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
    ```sh
    npm install --save-dev husky
-   # Delete "cd .. &&" from the next line if the package is in the root directory
+   # If necessary, change ".." to the path to the repository's root directory.
    npm set-script prepare "cd .. && husky install .husky"
    npm run prepare
    ```
@@ -154,6 +170,5 @@ See the [sample `config.yml`](.circleci/config.yml). You'll need to change the d
 
 ## To Do
 
-1. Test the ESLint configuration on more code from past projects.
-1. Improve README.
-1. Add support for Jest.
+1. Add support for testing frameworks.
+1. Rework the pre-commit script to improve stability under different scenarios.
