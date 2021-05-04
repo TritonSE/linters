@@ -8,6 +8,10 @@ Make sure you ran `npm install` in _every_ directory of the project (backend and
 
 ### Specific Problems
 
+#### I need to commit code that has lint errors or style discrepancies.
+
+Use `git commit --no-verify` to bypass the lint check.
+
 #### On Windows, after running Prettier, there are still style issues.
 
 This might be caused by Git converting the line endings to CRLF when Prettier expects LF. Try running `git config core.autocrlf false`.
