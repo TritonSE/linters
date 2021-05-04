@@ -1,16 +1,20 @@
 # Linters
 
-## Troubleshooting
+## Usage (For Developers)
+
+_This assumes that linting has already been set up for your project._
 
 ### General Instructions
 
-Make sure you ran `npm install` in _every_ directory of the project (backend and frontend).
+1. Run `npm install` in _every_ directory of the project (backend and frontend).
+1. Write code as usual and stage your changes.
+1. Try to make a commit. The lint check should run automatically.
+   1. If the lint check succeeds, finish the commit as usual.
+   1. If the lint check fails, you have two options:
+      1. Autofix errors with `npm run lint-fix`, manually fix any remaining errors, and stage these changes.
+      1. Bypass the lint check by using `git commit --no-verify`.
 
-### Specific Problems
-
-#### I need to commit code that has lint errors or style discrepancies.
-
-Use `git commit --no-verify` to bypass the lint check.
+### Troubleshooting
 
 #### On Windows, after running Prettier, there are still style issues.
 
@@ -20,7 +24,9 @@ This might be caused by Git converting the line endings to CRLF when Prettier ex
 
 This occurs because Git Bash doesn't properly parse the semicolon as a command separator. I added a workaround for this issue in [this commit](https://github.com/TritonSE/linters/commit/297c448380edf4755e8373cf1a52a028f50244a8), so if you have an older version, try repeating [this step](#add-npm-scripts) in the backend and frontend directories.
 
-## `.gitignore`
+## Initial Setup
+
+### `.gitignore`
 
 Initialize your repository's `.gitignore` with the Node.js template from [`github/gitignore`](https://github.com/github/gitignore):
 
@@ -32,7 +38,7 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
    curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore
    ```
 
-## Linting Setup
+### ESLint and Prettier
 
 You will need to complete these steps **twice**: once for the backend and once for the frontend.
 
@@ -129,7 +135,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 1. Stage and commit the modified files.
 
-## Git Hook Setup
+### Git Pre-Commit Hook
 
 1. Install [husky](https://typicode.github.io/husky) in **both** the backend and frontend:
 
