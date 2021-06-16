@@ -3,101 +3,161 @@
 # Directories containing Node.js projects to be linted.
 node_dirs=(backend frontend)
 
-# Command to run in each directory specified in node_dirs.
-lint_command=(npm run lint-check)
+# Command used to run a lint check.
+check_command=(npm run lint-check)
 
-# Uncomment the line below to disable linting.
-#lint_command=(pwd)
+# Uncomment the line below to disable linting for testing purposes.
+#check_command=(pwd)
+
+# Command used to autofix lint errors.
+fix_command=(npm run lint-fix)
 
 log() {
 	echo "${0}:" "${@}" >&2
 }
 
-die() {
-	log "${@}"
-	exit 1
-}
-
-num_stashes() {
-	git stash list | wc -l
-}
-
-# Make the working directory match the staging area.
-stash_push() {
-	log "Stashing unstaged changes."
-
-	local stashes_before=$(num_stashes)
-	git stash push --include-untracked --keep-index &> /dev/null
-	local stashes_after=$(num_stashes)
-
-	case "$(( stashes_after - stashes_before ))" in
-		1)
-			log "Stashing successful."
-			return 0
+parse_yes_no() {
+	case "${1}" in
+		[yY]|[yY][eE][sS])
+			echo "yes"
 			;;
-		0)
-			log "Nothing to stash."
-			return 1
+		[nN]|[nN][oO])
+			echo "no"
+			;;
+		"")
+			echo ""
 			;;
 		*)
-			die "Something unexpected occurred." \
-				"There used to be ${stashes_before} stash entries;" \
-				"now there are ${stashes_after}." \
-				"You'll need to manually recover your changes from the stash."
-			;;
+			echo "invalid"
 	esac
 }
 
-# Restore unstaged changes to the working directory.
-stash_pop() {
-	log "Restoring unstaged changes."
+ask_yes_no() {
+	local prompt="${1}"
+	local default_selection="$(parse_yes_no "${2}")"
 
-	if git stash pop &> /dev/null; then
-		log "Unstaged changes restored."
-		return 0
-	else
-		die "An unexpected error occurred." \
-			"Resolve the conflicts by hand, then run 'git stash drop'."
+	local yn_letters
+	local default_status
+	case "${default_selection}" in
+		yes)
+			yn_letters="Y/n"
+			default_status=0
+			;;
+		no)
+			yn_letters="y/N"
+			default_status=1
+			;;
+		*)
+			log "An internal error occurred. The default selection is missing or invalid."
+			exit 1
+			;;
+	esac
+
+	prompt+=" [${yn_letters}] "
+
+	if (( !interactive )); then
+		log "${prompt}"
+		log "stdin is not available. Using default selection '${default_selection}'."
+		return "${default_status}"
+	fi
+
+	local selection
+	while :; do
+		read -p "${0}: ${prompt}" selection
+		selection="$(parse_yes_no "${selection}")"
+
+		case "${selection}" in
+			yes)
+				return 0
+				;;
+			no)
+				return 1
+				;;
+			'')
+				return "${default_status}"
+				;;
+			*)
+				log "Invalid input. Please type 'y' or 'n' and press Enter."
+				;;
+		esac
+	done
+}
+
+dir_check() {
+	for dir in "${node_dirs[@]}"; do
+		if ! [ -d "${dir}" ]; then
+			log "Directory '${dir}' does not exist. Edit '${0}' and update the 'node_dirs' variable."
+			exit 1
+		fi
+	done
+}
+
+unstaged_changes_check() {
+	if git status --porcelain | grep -qv '^[MARC] '; then
+		git status
+
+		log "The working tree has unstaged changes. This may result in an incorrect lint check result."
+		if ! ask_yes_no "Proceed with lint check anyway?" "no"; then
+			log "Please resolve any merge conflicts, and stage (or stash) any unstaged changes. Then try again."
+			exit 1
+		fi
 	fi
 }
 
 lint_check() {
+	local failed_dirs=()
 	for dir in "${node_dirs[@]}"; do
-		if ! [ -d "${dir}" ]; then
-			log "Directory '${dir}' does not exist." \
-				"Edit this script and change 'node_dirs'."
-			return 1
+		log "Running lint check in '${dir}'..."
+		if ! (cd "${dir}" && "${check_command[@]}"); then
+			failed_dirs+=("${dir}")
 		fi
 	done
 
-	local lint_status=0
-	for dir in "${node_dirs[@]}"; do
-		if ! (cd "${dir}" && "${lint_command[@]}"); then
-			lint_status=1
-		fi
-	done
-
-	if (( lint_status )); then
-		log "Lint check failed." \
-			"Run 'npm run lint-fix', then manually fix any remaining errors," \
-			"and stage those changes." \
-			"To skip this lint check, use 'git commit --no-verify'."
-	else
+	if (( ${#failed_dirs[@]} == 0 )); then
 		log "Lint check passed."
+		return 0
 	fi
 
-	return "${lint_status}"
+	log "Lint check failed in the following directories:$(printf ' %q' "${failed_dirs[@]}")"
+
+	if ask_yes_no "Proceed with commit anyway?" "no"; then
+		return 0
+	fi
+
+	log "The lint autofix command is:$(printf ' %q' "${fix_command[@]}")"
+
+	if ask_yes_no "Run this command in each failed directory?" "yes"; then
+		for dir in "${failed_dirs[@]}"; do
+			log "Running autofix command in '${dir}'..."
+			(cd "${dir}" && "${fix_command[@]}")
+		done
+
+		log "Please manually fix any remaining lint errors, then stage your changes and try again."
+	else
+		log "Please fix the lint errors, then stage your changes and try again."
+	fi
+
+	return 1
+}
+
+cancel() {
+	>&2 echo
+	log "Lint check canceled."
+	exit 0
 }
 
 main() {
-	if [ -f '.git/MERGE_HEAD' ]; then
-		log "WARNING: unable to stash unstaged changes during merge." \
-			"If there are unstaged changes, they may result in an" \
-			"incorrect lint check result."
-	else
-		stash_push && trap stash_pop EXIT
+	trap cancel SIGINT
+	log "Starting lint check. Use Ctrl+C to skip."
+
+	interactive=1
+	if ! exec < /dev/tty; then
+		log "Cannot open stdin. Disabling interactive prompts."
+		interactive=0
 	fi
 
+	dir_check
+	unstaged_changes_check
 	lint_check
 }
 
