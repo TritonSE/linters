@@ -58,26 +58,40 @@ const reactRules = {
 };
 
 /**
- * Return a rules object which produces warnings instead of errors for accessibility problems.
+ * Override rules from eslint-plugin-jsx-a11y, if present.
  */
-function getAccessibilityWarningRules() {
-  const oldRules = require("eslint-plugin-jsx-a11y").rules;
+function getAccessibilityOverrideRules() {
+  let a11yRules;
+  try {
+    a11yRules = require("eslint-plugin-jsx-a11y").rules;
+  } catch (e) {
+    return {};
+  }
 
   const newRules = {};
-  Object.entries(oldRules).forEach(([name, _rule]) => {
+
+  // Produce warnings instead of errors for accessibility problems.
+  Object.keys(a11yRules).forEach((name) => {
     newRules[`jsx-a11y/${name}`] = "warn";
   });
+
   return newRules;
 }
 
 /**
- * Return a rules object which allows for...of statements to be used, since this syntax produces
- * errors with the default airbnb config.
+ * Override rules from eslint-config-airbnb-base, if present.
  */
-function getAllowForOfRules() {
-  const airbnbStyleRules = require("eslint-config-airbnb-base/rules/style.js").rules;
+function getAirbnbOverrideRules() {
+  let airbnbRules;
+  try {
+    airbnbRules = require("eslint-config-airbnb-base/rules/style.js").rules;
+  } catch (e) {
+    return {};
+  }
+
   return {
-    "no-restricted-syntax": airbnbStyleRules["no-restricted-syntax"].filter(
+    // Allow the use of for...of statements.
+    "no-restricted-syntax": airbnbRules["no-restricted-syntax"].filter(
       (item) => item.selector !== "ForOfStatement"
     ),
   };
@@ -86,55 +100,48 @@ function getAllowForOfRules() {
 /**
  * Load the .eslintrc.json file, which contains frontend/backend-specific configuration.
  */
-function loadConfig() {
+function loadEslintrcJson() {
   const path = ".eslintrc.json";
   try {
     return JSON.parse(readFileSync(path, "utf8"));
   } catch (e) {
     throw new Error(
-      `File '${path}' does not exist. Generate it by running 'npx eslint --init'. When prompted to choose the file format, select JSON.`
+      `File '${path}' does not exist. Follow the instructions in the documentation to create it.`
     );
   }
-}
-
-const jsonConfig = loadConfig();
-
-/**
- * Return whether this part of the project is using React.
- */
-function usingReact() {
-  return jsonConfig.plugins !== undefined && jsonConfig.plugins.includes("react");
 }
 
 /**
  * Generate the complete rules object.
  */
-function generateRules() {
+function generateRules(usingReact) {
   const rules = { ...generalRules };
-  Object.assign(rules, getAllowForOfRules());
-  if (usingReact()) {
+  Object.assign(rules, getAirbnbOverrideRules());
+  if (usingReact) {
     Object.assign(rules, reactRules);
-    Object.assign(rules, getAccessibilityWarningRules());
+    Object.assign(rules, getAccessibilityOverrideRules());
   }
   return rules;
 }
 
-if (process.env.NODE_ENV === "production") {
-  // In production (e.g. on Heroku), sometimes dev-dependencies are not installed
-  // This results in errors with the rule generation process
-  // Since linting isn't necessary in production, we can just ignore it
-  module.exports = {};
-} else {
-  const rules = generateRules();
-  module.exports = {
+/**
+ * Generate the ESLint configuration.
+ */
+function generateConfig() {
+  const eslintrcJson = loadEslintrcJson();
+  const usingReact = eslintrcJson.plugins !== undefined && eslintrcJson.plugins.includes("react");
+
+  return {
     settings: {
       react: {
         version: "detect",
       },
     },
-    ...jsonConfig,
-    ...(usingReact() ? { parser: "babel-eslint" } : {}),
-    extends: ["eslint:recommended", usingReact() ? "airbnb" : "airbnb-base", "prettier"],
-    rules,
+    ...eslintrcJson,
+    ...(usingReact ? { parser: "babel-eslint" } : {}),
+    extends: ["eslint:recommended", usingReact ? "airbnb" : "airbnb-base", "prettier"],
+    rules: generateRules(usingReact),
   };
 }
+
+module.exports = generateConfig();
