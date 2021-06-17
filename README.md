@@ -156,7 +156,7 @@ You will need to complete these steps **twice**: once for the backend and once f
    git commit
    ```
 
-   You can ignore any lint errors or other warnings for now. If you get stuck at an interactive prompt, you can use <kbd>Ctrl</kbd><kbd>C</kbd> to cancel the lint check and proceed with the commit.
+   You can ignore any lint errors or other warnings for now. If you get stuck at an interactive prompt, you can use <kbd>Ctrl</kbd><kbd>C</kbd> to cancel the lint check, and retry with `git commit --no-verify` to bypass the lint check.
 
 ### CI Configuration
 
