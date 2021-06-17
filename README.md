@@ -4,25 +4,11 @@
 
 _This assumes that linting has already been set up for your project._
 
-### General Instructions
-
 1. Run `npm install` in _every_ directory of the project (backend and frontend).
 1. Write code as usual and stage your changes.
 1. Try to make a commit. The lint check should run automatically.
-   1. If the lint check succeeds, finish the commit as usual.
-   1. If the lint check fails, you have two options:
-      1. Autofix errors with `npm run lint-fix`, manually fix any remaining errors, and stage these changes.
-      1. Bypass the lint check by using `git commit --no-verify`.
-
-### Troubleshooting
-
-#### On Windows, after running Prettier, there are still style issues.
-
-This might be caused by Git converting the line endings to CRLF when Prettier expects LF. Try running `git config core.autocrlf false`.
-
-#### In Git Bash, `npm run lint-fix` gives a strange error about `invalid option '--write'`.
-
-This occurs because Git Bash doesn't properly parse the semicolon as a command separator. I added a workaround for this issue in [this commit](https://github.com/TritonSE/linters/commit/297c448380edf4755e8373cf1a52a028f50244a8), so if you have an older version, try repeating [this step](#add-npm-scripts) in the backend and frontend directories.
+1. Follow the onscreen prompts to address any recommendations or warnings.
+1. If you're in a hurry, use `git commit --no-verify` to skip the lint check entirely.
 
 ## Initial Setup
 
@@ -115,7 +101,7 @@ You will need to complete these steps **twice**: once for the backend and once f
 
       > Our ESLint config is stricter than the one that comes with Create React App, so it will produce errors instead of warnings in many cases. However, the default webpack configuration causes the build to fail when there are lint errors. The environment variable in `.env.development` fixes this by treating errors as warnings. Make sure that this file is committed to Git; [it is safe to do so](https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env). Note that this functionality requires a recent version of `react-scripts`, so you may have to update that package to 4.0.3+. If it still doesn't work, try deleting `node_modules` and trying again, since old versions of `node_modules/react-scripts/config/webpack.config.js` don't load this environment variable.
 
-1. <span id="add-npm-scripts"></span>Add these scripts to your `package.json`:
+1. Add these scripts to your `package.json`:
 
    ```sh
    npm set-script format "prettier --write ."
@@ -148,37 +134,34 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 1. `cd` into your project's root directory.
 
-1. Set up a Git hook to lint and reformat your code before committing.
+1. Download the pre-commit script from this repo:
 
-   1. Download the pre-commit script from this repo:
+   ```sh
+   curl -o .husky/pre-commit https://raw.githubusercontent.com/TritonSE/linters/main/.husky/pre-commit
+   ```
 
-      ```sh
-      curl -o .husky/pre-commit https://raw.githubusercontent.com/TritonSE/linters/main/.husky/pre-commit
-      ```
+1. Open `.husky/pre-commit` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
 
-   1. Open `.husky/pre-commit` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
+1. Add execute permissions to the pre-commit script:
 
-   1. Add execute permissions to the pre-commit script:
+   ```sh
+   chmod u+x .husky/pre-commit
+   ```
 
-      ```sh
-      chmod u+x .husky/pre-commit
-      ```
+1. Stage the `.husky` directory, along with your `package.json` and `package-lock.json` for the backend and frontend.
 
-   1. Verify that the pre-commit script runs when you commit:
+1. Verify that the pre-commit script runs when you commit:
 
-      ```sh
-      git commit
-      ```
+   ```sh
+   git commit
+   ```
 
-      If the lint check passes, you should see a message to that effect, and you should be able to commit. Otherwise, you should see a list of lint errors, and the commit should be aborted.
+   You can ignore any lint errors or other warnings for now. If you get stuck at an interactive prompt, you can use <kbd>Ctrl</kbd><kbd>C</kbd> to cancel the lint check and proceed with the commit.
 
-1. Stage and commit the `.husky` directory, along with your `package.json` and `package-lock.json` for the backend and frontend. (You'll need to use `git commit --no-verify` if there are unfixed lint errors at the moment.)
+### CI Configuration
 
-## CircleCI Configuration
-
-See the [sample `config.yml`](.circleci/config.yml). You'll need to change the directory names for the frontend and backend if they're different for your project.
+Please refer to the [sample workflow](.github/workflows/lint-check.yml) for GitHub Actions or the [sample `config.yml`](.circleci/config.yml) for CircleCI. You'll need to change the directory names for the frontend and backend if they're different for your project.
 
 ## To Do
 
 1. Add support for testing frameworks.
-1. Rework the pre-commit script to improve stability under different scenarios.
