@@ -108,6 +108,17 @@ dir_check() {
 	done
 }
 
+autocrlf_check() {
+	local core_autocrlf="$(git config --get core.autocrlf || echo "false")"
+	if [ "${core_autocrlf}" != "false" ]; then
+		warn "core.autocrlf is set to '${core_autocrlf}' in the git config."
+		warn "This might produce CRLF line endings in the working"
+		warn "tree when Prettier expects LF. This can be fixed by"
+		warn "running the following command:"
+		warn "    git config core.autocrlf false"
+	fi
+}
+
 unstaged_changes_check() {
 	if git status --porcelain | grep -qv '^[MARC] '; then
 		git status
@@ -178,6 +189,7 @@ main() {
 	fi
 
 	dir_check
+	autocrlf_check
 	unstaged_changes_check
 	lint_check
 }
