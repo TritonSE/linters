@@ -12,8 +12,20 @@ check_command=(npm run lint-check)
 # Command used to autofix lint errors.
 fix_command=(npm run lint-fix)
 
+setaf3="$(tput setaf 3 2> /dev/null)"
+setaf1="$(tput setaf 1 2> /dev/null)"
+sgr0="$(tput sgr0 2> /dev/null)"
+
 log() {
 	echo "${0}:" "${@}" >&2
+}
+
+warn() {
+	log "${setaf3}${@}${sgr0}"
+}
+
+error() {
+	log "${setaf1}${@}${sgr0}"
 }
 
 parse_yes_no() {
@@ -48,7 +60,8 @@ ask_yes_no() {
 			default_status=1
 			;;
 		*)
-			log "An internal error occurred. The default selection is missing or invalid."
+			error "An internal error occurred."
+			error "The default selection is missing or invalid."
 			exit 1
 			;;
 	esac
@@ -57,7 +70,8 @@ ask_yes_no() {
 
 	if (( !interactive )); then
 		log "${prompt}"
-		log "stdin is not available. Using default selection '${default_selection}'."
+		warn "Skipping interactive prompt (stdin not available)."
+		warn "Choosing default selection '${default_selection}'."
 		return "${default_status}"
 	fi
 
@@ -77,7 +91,8 @@ ask_yes_no() {
 				return "${default_status}"
 				;;
 			*)
-				log "Invalid input. Please type 'y' or 'n' and press Enter."
+				warn "Invalid input."
+				log "Please type 'y' or 'n' and press Enter."
 				;;
 		esac
 	done
@@ -86,7 +101,8 @@ ask_yes_no() {
 dir_check() {
 	for dir in "${node_dirs[@]}"; do
 		if ! [ -d "${dir}" ]; then
-			log "Directory '${dir}' does not exist. Edit '${0}' and update the 'node_dirs' variable."
+			error "Directory '${dir}' does not exist. Please"
+			error "edit the 'node_dirs' variable in '${0}'."
 			exit 1
 		fi
 	done
@@ -96,9 +112,11 @@ unstaged_changes_check() {
 	if git status --porcelain | grep -qv '^[MARC] '; then
 		git status
 
-		log "The working tree has unstaged changes. This may result in an incorrect lint check result."
+		warn "The working tree has unstaged changes, which"
+		warn "may result in an incorrect lint check result."
 		if ! ask_yes_no "Proceed with lint check anyway?" "no"; then
-			log "Please resolve any merge conflicts, and stage (or stash) any unstaged changes. Then try again."
+			log "Please stage (or stash) any unstaged changes,"
+			log "then try again."
 			exit 1
 		fi
 	fi
@@ -118,23 +136,26 @@ lint_check() {
 		return 0
 	fi
 
-	log "Lint check failed in the following directories:$(printf ' %q' "${failed_dirs[@]}")"
+	warn "Lint check failed in the following directories:"
+	warn "   $(printf ' %q' "${failed_dirs[@]}")"
 
 	if ask_yes_no "Proceed with commit anyway?" "no"; then
 		return 0
 	fi
 
-	log "The lint autofix command is:$(printf ' %q' "${fix_command[@]}")"
-
+	log "The lint autofix command is:"
+	log "   $(printf ' %q' "${fix_command[@]}")"
 	if ask_yes_no "Run this command in each failed directory?" "yes"; then
 		for dir in "${failed_dirs[@]}"; do
 			log "Running autofix command in '${dir}'..."
 			(cd "${dir}" && "${fix_command[@]}")
 		done
 
-		log "Please manually fix any remaining lint errors, then stage your changes and try again."
+		log "Please manually fix any remaining lint errors,"
+		log "then stage your changes and try again."
 	else
-		log "Please fix the lint errors, then stage your changes and try again."
+		log "Please fix the lint errors, then stage your"
+		log "changes and try again."
 	fi
 
 	return 1
@@ -152,7 +173,7 @@ main() {
 
 	interactive=1
 	if ! exec < /dev/tty; then
-		log "Cannot open stdin. Disabling interactive prompts."
+		warn "Cannot open stdin. Disabling interactive prompts."
 		interactive=0
 	fi
 
