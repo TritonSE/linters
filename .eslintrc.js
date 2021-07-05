@@ -137,6 +137,12 @@ function generateRules(usingReact) {
  * Generate the ESLint configuration.
  */
 function generateConfig() {
+  if (process.env.NODE_ENV === "production") {
+    // Disable linting in production, since it is unnecessary and can cause
+    // errors if dev dependencies are not installed.
+    return {};
+  }
+
   const eslintrcJson = loadEslintrcJson();
   const usingReact = eslintrcJson.plugins !== undefined && eslintrcJson.plugins.includes("react");
 
