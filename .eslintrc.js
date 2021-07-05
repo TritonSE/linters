@@ -103,12 +103,20 @@ function getAirbnbOverrideRules() {
  */
 function loadEslintrcJson() {
   const path = ".eslintrc.json";
+
+  let data;
   try {
-    return JSON.parse(readFileSync(path, "utf8"));
+    data = readFileSync(path, "utf8");
   } catch (e) {
     throw new Error(
       `File '${path}' does not exist. Follow the instructions in the documentation to create it.`
     );
+  }
+
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    throw new Error(`Syntax error in '${path}': ${e.message}`);
   }
 }
 
