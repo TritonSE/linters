@@ -140,17 +140,24 @@ function generateConfig() {
   const eslintrcJson = loadEslintrcJson();
   const usingReact = eslintrcJson.plugins !== undefined && eslintrcJson.plugins.includes("react");
 
-  return {
+  const config = {
     settings: {
       react: {
         version: "detect",
       },
     },
     ...eslintrcJson,
-    ...(usingReact ? { parser: "babel-eslint" } : {}),
     extends: ["eslint:recommended", usingReact ? "airbnb" : "airbnb-base", "prettier"],
     rules: generateRules(usingReact),
   };
+
+  if (usingReact) {
+    config.parser = "@babel/eslint-parser";
+    config.parserOptions.requireConfigFile = false;
+    config.parserOptions.babelOptions = { plugins: ["@babel/plugin-syntax-jsx"] };
+  }
+
+  return config;
 }
 
 module.exports = generateConfig();
