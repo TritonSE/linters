@@ -3,6 +3,7 @@
 const { readFileSync } = require("fs");
 
 const generalRules = {
+  "default-case": "off",
   "no-plusplus": "off",
   "no-continue": "off",
   "prefer-template": "off",
@@ -24,11 +25,13 @@ const generalRules = {
   "no-param-reassign": "off",
 
   /**
-   * Unused variables and arguments should be removed in most cases, but sometimes they are
-   * unavoidable. Prefix variable names with an underscore to suppress the error.
+   * Unused variables and arguments should be removed in most cases, but it's
+   * convenient to allow them when the code is still being implemented.
+   *
+   * Prefix variable names with an underscore to suppress the warning.
    */
   "no-unused-vars": [
-    "error",
+    "warn",
     {
       argsIgnorePattern: "^_",
       varsIgnorePattern: "^_",
@@ -109,9 +112,7 @@ function loadEslintrcJson() {
   try {
     data = readFileSync(path, "utf8");
   } catch (e) {
-    throw new Error(
-      `File '${path}' does not exist. Follow the instructions in the documentation to create it.`
-    );
+    throw new Error(`File '${path}' does not exist.`);
   }
 
   try {
@@ -124,12 +125,16 @@ function loadEslintrcJson() {
 /**
  * Generate the complete rules object.
  */
-function generateRules(usingReact) {
+function generateRules(usingReact, usingNode) {
   const rules = { ...generalRules };
   Object.assign(rules, getAirbnbOverrideRules());
   if (usingReact) {
     Object.assign(rules, reactRules);
     Object.assign(rules, getAccessibilityOverrideRules());
+  }
+  if (usingNode) {
+    // Allow console.log and friends in the backend.
+    rules["no-console"] = "off";
   }
   return rules;
 }
@@ -146,6 +151,7 @@ function generateConfig() {
 
   const eslintrcJson = loadEslintrcJson();
   const usingReact = eslintrcJson.plugins !== undefined && eslintrcJson.plugins.includes("react");
+  const usingNode = eslintrcJson.env.node;
 
   const config = {
     settings: {
@@ -155,7 +161,7 @@ function generateConfig() {
     },
     ...eslintrcJson,
     extends: ["eslint:recommended", usingReact ? "airbnb" : "airbnb-base", "prettier"],
-    rules: generateRules(usingReact),
+    rules: generateRules(usingReact, usingNode),
   };
 
   if (usingReact) {
