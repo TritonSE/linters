@@ -136,13 +136,13 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 1. `cd` into your project's root directory.
 
-1. Download the pre-commit script from this repo:
+1. Download the pre-commit script and config file from this repo:
 
    ```sh
-   curl -o .husky/pre-commit https://raw.githubusercontent.com/TritonSE/linters/main/.husky/pre-commit
+   for file in pre-commit lint-config.sh; do curl -o .husky/$file https://raw.githubusercontent.com/TritonSE/linters/main/.husky/$file; done
    ```
 
-1. Open `.husky/pre-commit` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
+1. Open `.husky/lint-config` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
 
 1. Add execute permissions to the pre-commit script:
 
