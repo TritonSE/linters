@@ -142,7 +142,7 @@ You will need to complete these steps **twice**: once for the backend and once f
    for file in pre-commit lint-config.sh; do curl -o .husky/$file https://raw.githubusercontent.com/TritonSE/linters/main/.husky/$file; done
    ```
 
-1. Open `.husky/lint-config` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
+1. Open `.husky/lint-config.sh` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
 
 1. Add execute permissions to the pre-commit script:
 
