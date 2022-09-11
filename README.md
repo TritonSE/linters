@@ -46,6 +46,12 @@ You will need to complete these steps **twice**: once for the backend and once f
       npm install --save-dev eslint-config-airbnb @babel/eslint-parser eslint-config-prettier prettier $(npm info "eslint-config-airbnb@latest" peerDependencies | grep -Eo "'?[^':]+'?:" | tr -d " :'{}")
       ```
 
+   Additionally, if you are using TypeScript:
+
+   ```sh
+   npm install --save-dev eslint-config-airbnb-typescript
+   ```
+
 1. Initialize a barebones ESLint config file with project-specific settings:
 
    ```sh
@@ -69,7 +75,9 @@ You will need to complete these steps **twice**: once for the backend and once f
      <dd>JSON</dd>
    </dl>
 
-   If you answer a prompt incorrectly, you can simply rerun the command to try again.
+   If you are asked to install any dependencies, install them. If you answer a prompt incorrectly, you can simply rerun the command to try again.
+
+1. If you are using TypeScript, [configure the ESLint TypeScript parser](https://github.com/iamturns/eslint-config-airbnb-typescript#4-configure-the-eslint-typescript-parser).
 
 1. If your frontend is in a subdirectory of the backend, you'll need to follow some additional instructions to ensure that the frontend and backend are linted separately.
 
@@ -90,13 +98,13 @@ You will need to complete these steps **twice**: once for the backend and once f
    1. Backend:
 
       ```sh
-      for file in .eslintrc.js .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+      for file in .eslintrc.js .eslintignore .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
       ```
 
    1. Frontend:
 
       ```sh
-      for file in .eslintrc.js .prettierrc.json .env.development; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+      for file in .eslintrc.js .eslintignore .prettierrc.json .env.development; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
       ```
 
       > Our ESLint config is stricter than the one that comes with Create React App, so it will produce errors instead of warnings in many cases. However, the default webpack configuration causes the build to fail when there are lint errors. The environment variable in `.env.development` fixes this by treating errors as warnings. Make sure that this file is committed to Git; [it is safe to do so](https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env).
