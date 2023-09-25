@@ -10,8 +10,8 @@ jobs:
     name: Backend lint and style check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
     - working-directory: backend # Change this to the name of your backend directory
       run: |
         npm ci
@@ -20,8 +20,8 @@ jobs:
     name: Frontend lint and style check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
     - working-directory: frontend # Change this to the name of your frontend directory
       run: |
         npm ci
