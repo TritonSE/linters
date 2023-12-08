@@ -7,7 +7,7 @@ _This assumes that linting has already been set up for your project._
 1. Run `npm install` in _every_ directory of the project (backend and frontend).
 1. Write code as usual and stage your changes.
 1. Try to make a commit. The lint check should run automatically.
-1. Follow the onscreen prompts to address any recommendations or warnings.
+1. Follow the prompts to address any recommendations or warnings.
 1. If you're in a hurry, use `git commit --no-verify` to skip the lint check entirely.
 
 ## Initial Setup
@@ -170,8 +170,4 @@ You will need to complete these steps **twice**: once for the backend and once f
 
 ### CI Configuration
 
-Please refer to the [sample workflow](.github/workflows/lint-check.yml) for GitHub Actions or the [sample `config.yml`](.circleci/config.yml) for CircleCI. You'll need to change the directory names for the frontend and backend if they're different for your project.
-
-## To Do
-
-1. Add support for testing frameworks.
+Please refer to the [sample workflow](.github/workflows/lint-check.yml) for GitHub Actions. You'll need to change the directory names for the frontend and backend if they're different for your project.
