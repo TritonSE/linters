@@ -1,5 +1,6 @@
 const child_process = require("node:child_process");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const process = require("node:process");
 
@@ -38,47 +39,28 @@ const secretRemovalAdvice = `
 `.trim();
 
 /**
- * @param {[string, ...string[]]} command
- * @returns {string}
- */
-function runCommand(command) {
-  const process = child_process.spawnSync(command[0], command.slice(1), {
-    cwd: __dirname,
-    encoding: "utf8",
-    maxBuffer: Infinity,
-  });
-
-  if (process.status === 0) {
-    return process.stdout;
-  }
-
-  console.error(process);
-  throw new Error(`Command did not execute successfully: ${JSON.stringify(command)}`);
-}
-
-/** @returns {void} */
-function checkGitVersion() {
-  const command = ["git", "--version"];
-  const output = runCommand(["git", "--version"]);
-  const expectedPrefix = "git version ";
-
-  if (!output.startsWith(expectedPrefix)) {
-    const msg = `Output of command ${JSON.stringify(
-      command
-    )} did not start with expected prefix ${JSON.stringify(
-      expectedPrefix
-    )}. Maybe the text encoding for child process output is not utf8 in this environment?`;
-    throw new Error(msg);
-  }
-}
-
-/**
  * @param {string} filePath
  * @returns {unknown}
  */
 function parseJSONFromFile(filePath) {
   const text = fs.readFileSync(filePath, { encoding: CACHE_AND_CONFIG_ENCODING });
   return JSON.parse(text);
+}
+
+/**
+ * @template T
+ * @param {() => T} callback
+ * @returns {T | null}
+ */
+function nullIfFileNotFound(callback) {
+  try {
+    return callback();
+  } catch (e) {
+    if (typeof e === "object" && e !== null && "code" in e && e.code === "ENOENT") {
+      return null;
+    }
+    throw e;
+  }
 }
 
 /**
@@ -171,22 +153,6 @@ function loadCache() {
 }
 
 /**
- * @template T
- * @param {() => T} callback
- * @returns {T | null}
- */
-function nullIfFileNotFound(callback) {
-  try {
-    return callback();
-  } catch (e) {
-    if (typeof e === "object" && e !== null && "code" in e && e.code === "ENOENT") {
-      return null;
-    }
-    throw e;
-  }
-}
-
-/**
  * @param {SecretScanCache} cache
  * @returns {void}
  */
@@ -195,22 +161,51 @@ function saveCache(cache) {
 }
 
 /**
+ * @param {[string, ...string[]]} command
+ * @returns {string}
+ */
+function runCommand(command) {
+  const process = child_process.spawnSync(command[0], command.slice(1), {
+    cwd: __dirname,
+    encoding: "utf8",
+    maxBuffer: Infinity,
+  });
+
+  if (process.status === 0) {
+    return process.stdout;
+  }
+
+  console.error(process);
+  throw new Error(`Command did not execute successfully: ${JSON.stringify(command)}`);
+}
+
+/**
  * @param {string} text
  * @returns {string[]}
  */
 function nonEmptyLines(text) {
-  return text.split("\n").filter((line) => line.length > 0);
+  return text.split(os.EOL).filter((line) => line.length > 0);
 }
 
-/** @returns {number} */
-function main() {
-  /** @type {{ where: string; path: string; line: number; regexName: string; matchedText: string }[]} */
-  const detectedSecrets = [];
+/** @returns {void} */
+function checkGitVersion() {
+  const command = ["git", "--version"];
+  const output = runCommand(["git", "--version"]);
+  const expectedPrefix = "git version ";
 
-  console.log(`${__filename}: Scanning commit history and working tree for secrets.`);
+  if (!output.startsWith(expectedPrefix)) {
+    const msg = `Output of command ${JSON.stringify(
+      command
+    )} did not start with expected prefix ${JSON.stringify(
+      expectedPrefix
+    )}. Maybe the text encoding for child process output is not utf8 in this environment?`;
+    throw new Error(msg);
+  }
+}
 
-  checkGitVersion();
-  const repoRoot = runCommand(["git", "rev-parse", "--show-toplevel"]).trimEnd();
+/** @returns {string} */
+function getRepoRoot() {
+  const repoRoot = runCommand(["git", "rev-parse", "--show-toplevel"]).replace(os.EOL, "");
 
   // Make sure we don't get "file not found" later and assume the file was
   // deleted from the working tree, when the actual cause is having an incorrect
@@ -220,6 +215,27 @@ function main() {
       `Could not determine repo root: got ${JSON.stringify(repoRoot)}, but this is incorrect?`
     );
   }
+
+  return repoRoot;
+}
+
+/** @returns {number} */
+function main() {
+  /**
+   * @type {{
+   *   where: string;
+   *   path: string;
+   *   line: number;
+   *   regexName: string;
+   *   matchedText: string;
+   * }[]}
+   */
+  const detectedSecrets = [];
+
+  console.log(`${__filename}: Scanning commit history and working tree for secrets.`);
+
+  checkGitVersion();
+  const repoRoot = getRepoRoot();
 
   const config = loadConfig();
   const script = fs.readFileSync(__filename, { encoding: "utf8" });
@@ -261,6 +277,8 @@ function main() {
     /** @type {{ path: string; where: string; contents: string; }[]} */
     const changedFiles = [];
 
+    // Don't try to read deleted files. If you ever get an error message like
+    // "unknown revision or path not in the working tree", double check this.
     const gitListFileOptions = ["--no-renames", "--diff-filter=d", "--name-only"];
 
     if (maybeCommitHash === null) {
@@ -268,10 +286,12 @@ function main() {
         (line) => line.slice(3)
       );
       for (const workingTreePath of workingTreePaths) {
-        // The file appears in git status if it was deleted, so it might not exist anymore.
+        // If the file was deleted, we can ignore it. I was a bit too lazy to
+        // parse the status letters of `git status --porcelain`.
         let contents = nullIfFileNotFound(() =>
           fs.readFileSync(path.join(repoRoot, workingTreePath), { encoding: "utf8" })
         );
+
         if (contents !== null) {
           changedFiles.push({
             path: workingTreePath,
@@ -281,7 +301,9 @@ function main() {
         }
       }
 
-      const stagedPaths = nonEmptyLines(runCommand(["git", "diff", "--staged", ...gitListFileOptions]));
+      const stagedPaths = nonEmptyLines(
+        runCommand(["git", "diff", "--staged", ...gitListFileOptions])
+      );
       for (const stagedPath of stagedPaths) {
         changedFiles.push({
           path: stagedPath,
@@ -343,12 +365,15 @@ function main() {
     }
   }
 
+  // Scan every commit.
   const allCommitHashes = nonEmptyLines(runCommand(["git", "log", "--pretty=format:%H"]));
   for (const hash of allCommitHashes) {
     if (!previouslyScannedCommitHashes.has(hash)) {
       scan(hash);
     }
   }
+
+  // Scan the working tree.
   scan(null);
 
   saveCache(cache);
