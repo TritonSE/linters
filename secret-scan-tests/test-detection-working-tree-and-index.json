@@ -1,0 +1,16 @@
+[
+  {
+    "where": "working tree",
+    "path": ".env.example",
+    "line": 2,
+    "regexName": "mongodbUrl",
+    "matchedText": "mongodb+srv://username:newpassword@cluster0.abcdef7.mongodb.net/?retryWrites=true&w=majority"
+  },
+  {
+    "where": "index",
+    "path": ".env.example",
+    "line": 2,
+    "regexName": "mongodbUrl",
+    "matchedText": "mongodb+srv://username:password@cluster0.abcdef7.mongodb.net/?retryWrites=true&w=majority"
+  }
+]

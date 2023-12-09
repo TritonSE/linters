@@ -6,7 +6,8 @@ const process = require("node:process");
 
 const CACHE_PATH = path.join(__dirname, "secret-scan-cache.json");
 const CONFIG_PATH = path.join(__dirname, "secret-scan-config.json");
-const CACHE_AND_CONFIG_ENCODING = "utf8";
+const REPORT_PATH = path.join(__dirname, "secret-scan-report.json");
+const JSON_ENCODING = "utf8";
 
 const secretRemovalAdvice = `
 1. If you are absolutely confident that the reported
@@ -43,7 +44,7 @@ const secretRemovalAdvice = `
  * @returns {unknown}
  */
 function parseJSONFromFile(filePath) {
-  const text = fs.readFileSync(filePath, { encoding: CACHE_AND_CONFIG_ENCODING });
+  const text = fs.readFileSync(filePath, { encoding: JSON_ENCODING });
   return JSON.parse(text);
 }
 
@@ -157,7 +158,30 @@ function loadCache() {
  * @returns {void}
  */
 function saveCache(cache) {
-  fs.writeFileSync(CACHE_PATH, JSON.stringify(cache), { encoding: CACHE_AND_CONFIG_ENCODING });
+  fs.writeFileSync(CACHE_PATH, JSON.stringify(cache), { encoding: JSON_ENCODING });
+}
+
+function deleteReport() {
+  if (fs.statSync(REPORT_PATH, { throwIfNoEntry: false })?.isFile()) {
+    fs.unlinkSync(REPORT_PATH);
+  }
+}
+
+/**
+ * @typedef {{
+ *   where: string;
+ *   path: string;
+ *   line: number;
+ *   regexName: string;
+ *   matchedText: string;
+ * }[]} SecretScanReport
+ */
+
+/**
+ * @param {SecretScanReport} report
+ */
+function saveReport(report) {
+  fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + "\n", { encoding: JSON_ENCODING });
 }
 
 /**
@@ -221,16 +245,14 @@ function getRepoRoot() {
 
 /** @returns {number} */
 function main() {
+  const shouldSaveReport = process.env["SECRET_SCAN_WRITE_REPORT"] === "1";
+
+  deleteReport();
+
   /**
-   * @type {{
-   *   where: string;
-   *   path: string;
-   *   line: number;
-   *   regexName: string;
-   *   matchedText: string;
-   * }[]}
+   * @type {SecretScanReport}
    */
-  const detectedSecrets = [];
+  const report = [];
 
   console.log(`${__filename}: Scanning commit history and working tree for secrets.`);
 
@@ -270,6 +292,9 @@ function main() {
   }
 
   /**
+   * Scan the commit with the given hash, or null to scan the index and working
+   * tree.
+   *
    * @param {string | null} maybeCommitHash
    * @returns {void}
    */
@@ -341,7 +366,7 @@ function main() {
           const line = contents.substring(0, match.index).split("\n").length;
 
           secretDetected = true;
-          detectedSecrets.push({
+          report.push({
             where,
             path,
             line,
@@ -373,12 +398,17 @@ function main() {
     }
   }
 
-  // Scan the working tree.
+  // Scan the index and working tree.
   scan(null);
+
+  if (shouldSaveReport) {
+    saveReport(report);
+    console.log(`Report written to ${JSON.stringify(REPORT_PATH)}`);
+  }
 
   saveCache(cache);
 
-  if (detectedSecrets.length > 0) {
+  if (report.length > 0) {
     console.log(`Secret scan completed with errors.\n\n${secretRemovalAdvice}\n`);
     return 1;
   } else {

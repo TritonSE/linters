@@ -1,4 +1,5 @@
 # This config file is sourced by the pre-commit script.
+# shellcheck disable=SC2034,SC2148
 
 # Change 1 to 0 to disable linting.
 enabled=1

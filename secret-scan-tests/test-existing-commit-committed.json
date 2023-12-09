@@ -1,0 +1,9 @@
+[
+  {
+    "where": "commit \"XXXXXXX add .env.example\"",
+    "path": ".env.example",
+    "line": 1,
+    "regexName": "coolServiceToken",
+    "matchedText": "coolservice:1234567890abcdef"
+  }
+]
