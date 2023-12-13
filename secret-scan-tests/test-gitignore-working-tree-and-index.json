@@ -1,0 +1,16 @@
+[
+  {
+    "where": "working tree",
+    "path": "credentials.json",
+    "line": 5,
+    "regexName": "firebaseJsonPrivateKeyFile",
+    "matchedText": "-----BEGIN PRIVATE KEY-----\\nblahblahblahblah\\n-----END"
+  },
+  {
+    "where": "index",
+    "path": "credentials.json",
+    "line": 5,
+    "regexName": "firebaseJsonPrivateKeyFile",
+    "matchedText": "-----BEGIN PRIVATE KEY-----\\nblahblahblahblah\\n-----END"
+  }
+]

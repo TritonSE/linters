@@ -1,0 +1,12 @@
+// Enforce strict typing in secret-scan.js without requiring transpilation.
+// This file is only used for developing in this repository, and does not need
+// to be copied to other repositories as part of linter setup.
+{
+  "compilerOptions": {
+    "target": "es6",
+    "strict": true,
+    "noEmit": true,
+    "checkJs": true
+  },
+  "include": ["*.js"]
+}
