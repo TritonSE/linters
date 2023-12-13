@@ -233,6 +233,16 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
    git push
    ```
 
+1. Create a file called `fake-env` somewhere in your repository, and paste the following text into it:
+
+   ```
+   mongodb://this-is-a-fake-database
+   ```
+
+   If you run `git commit`, you should see an error like `SECRET DETECTED in working tree, file "fake-env"`. This secret scanning tool aims to prevent credentials or other secrets from being committed to Git by accident. After deleting `fake-env`, you should be able to commit again.
+
+   To customize what kinds of secrets are detected, especially if you will use credentials for something other than MongoDB or Firebase, see `.secret-scan/secret-scan-config.json` in your repository.
+
 1. Ask anyone else who has already cloned the repository to run `npm install` in the frontend and backend again, so that the Git hooks are installed for them as well.
 
 ### CI Configuration
