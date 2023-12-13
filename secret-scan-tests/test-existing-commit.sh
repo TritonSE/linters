@@ -38,3 +38,10 @@ sed -i \
   .secret-scan/secret-scan-config.json
 
 assert_scan_fails 'committed'
+
+# Assume we revoked the secret and decided not to rewrite the commit history.
+sed -i \
+  's/"allowedStrings": \[/&"coolservice:1234567890abcdef", /' \
+  .secret-scan/secret-scan-config.json
+
+assert_scan_passes

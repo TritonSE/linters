@@ -85,11 +85,10 @@ ask_yes_no() {
 	done
 }
 
-# TODO: use an environment variable to disable linting but not secret scanning
 explain_no_verify() {
 	log "If you wish to bypass the lint check entirely,"
 	log "use the following command:"
-	log "    git commit --no-verify"
+	log "    NO_LINT=1 git commit"
 }
 
 dir_check() {
@@ -186,7 +185,10 @@ main() {
 		exit 1
 	fi
 
-	if [ "${enabled}" -eq 0 ]; then
+	secret_scan_script="$(dirname "${0}")/../.secret-scan/secret-scan.js"
+	node "${secret_scan_script}" || exit
+
+	if [ "${enabled}" = 0 ] || [ "${NO_LINT}" = 1 ]; then
 		warn "Lint check has been disabled."
 		exit 0
 	fi

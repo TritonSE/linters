@@ -12,8 +12,6 @@ setup_test() {
 
   # Keep this list of files in sync with the install instructions in the README.
   for file in \
-    .husky/lint-config.sh \
-    .husky/pre-commit \
     .secret-scan/.gitignore \
     .secret-scan/secret-scan-config.json \
     .secret-scan/secret-scan.js \
