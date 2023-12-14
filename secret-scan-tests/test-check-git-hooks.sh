@@ -34,4 +34,6 @@ grep 'returned ".wrong-hooks-path", expected ".husky"' expect-wrong-path.txt
 
 git config core.hooksPath .husky
 
-node .secret-scan/secret-scan.js -- --check-git-hooks
+node .secret-scan/secret-scan.js -- --check-git-hooks > expect-ok.txt 2>&1
+
+grep 'Git hooks are correctly installed' expect-ok.txt

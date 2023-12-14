@@ -195,7 +195,25 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
 ### Git Hooks and Secret Scanning
 
-1. Install [husky](https://typicode.github.io/husky) in the backend:
+1. `cd` into your project's root directory.
+
+1. Download the necessary files from this repo:
+
+   <!-- IMPORTANT: if you modify the list of files below, update secret-scan-tests/common.sh as well. -->
+
+   ```sh
+   for file in .husky/lint-config.sh .husky/pre-commit .husky/pre-push .secret-scan/.gitignore .secret-scan/secret-scan-config.json .secret-scan/secret-scan.js; do curl -o $file https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   ```
+
+1. Open `.husky/lint-config.sh` in your editor of choice, and edit the `node_dirs` variable (if needed) to match your project's frontend and backend directories.
+
+1. Add execute permissions to the pre-commit and pre-push scripts:
+
+   ```sh
+   chmod u+x .husky/pre-commit .husky/pre-push
+   ```
+
+1. `cd` into the backend and install [husky](https://typicode.github.io/husky):
 
    ```sh
    npm install --save-dev husky
@@ -211,24 +229,6 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
    ```
 
 1. Repeat the steps above for the frontend.
-
-1. `cd` into your project's root directory.
-
-1. Download the necessary files from this repo:
-
-   <!-- IMPORTANT: if you modify the list of files below, update secret-scan-tests/common.sh as well. -->
-
-   ```sh
-   for file in .husky/lint-config.sh .husky/pre-commit .husky/pre-push .secret-scan/.gitignore .secret-scan/secret-scan-config.json .secret-scan/secret-scan.js; do curl -o $file https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
-   ```
-
-1. Open `.husky/lint-config.sh` in your editor of choice, and edit the `node_dirs` variable to match your project's frontend and backend directories.
-
-1. Add execute permissions to the pre-commit and pre-push scripts:
-
-   ```sh
-   chmod u+x .husky/pre-commit .husky/pre-push
-   ```
 
 1. Stage the `.husky` and `.secret-scan` directories, along with your `package.json` and `package-lock.json` for the backend and frontend.
 
