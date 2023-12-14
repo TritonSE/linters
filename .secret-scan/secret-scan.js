@@ -2,6 +2,8 @@ const child_process = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const process = require("node:process");
+const util = require("node:util");
+const tty = require("node:tty");
 
 const CACHE_PATH = path.join(__dirname, "secret-scan-cache.json");
 const CONFIG_PATH = path.join(__dirname, "secret-scan-config.json");
@@ -44,6 +46,21 @@ const secretRemovalAdvice = `
    responsibility belongs to the processes and tooling, not
    the individual.
 `.trim();
+
+/**
+ * @param {string} text
+ * @returns {string}
+ */
+function redText(text) {
+  if (process.stdout.isTTY && process.stdout.hasColors()) {
+    // https://github.com/nodejs/node/issues/42770#issuecomment-1101093517
+    const red = util.inspect.colors.red;
+    if (red !== undefined) {
+      return `\u001b[${red[0]}m` + text + `\u001b[${red[1]}m`;
+    }
+  }
+  return text;
+}
 
 /**
  * @param {string} filePath
@@ -187,7 +204,9 @@ function deleteReport() {
  * @param {SecretScanReport} report
  */
 function saveReport(report) {
-  fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + "\n", { encoding: JSON_ENCODING });
+  fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + "\n", {
+    encoding: JSON_ENCODING,
+  });
 }
 
 /**
@@ -415,7 +434,7 @@ function main() {
   saveCache(cache);
 
   if (report.length > 0) {
-    console.log(`Secret scan completed with errors.\n\n${secretRemovalAdvice}\n`);
+    console.log(redText(`Secret scan completed with errors.\n\n${secretRemovalAdvice}\n`));
     return 1;
   } else {
     console.log("Secret scan completed successfully.");
