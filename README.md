@@ -86,14 +86,17 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 1. Add these scripts to your `package.json`:
 
    ```sh
-   npm pkg set scripts.format="prettier --write ."
-   npm pkg set scripts.lint-fix="(eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
-   npm pkg set scripts.lint-check="eslint --cache --report-unused-disable-directives . && prettier --check ."
+   npm pkg set scripts.format="npm run check-git-hooks && prettier --write ."
+   npm pkg set scripts.lint-fix="npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
+   npm pkg set scripts.lint-check="npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check ."
+   npm pkg set scripts.check-git-hooks="echo Git hooks not configured yet. You SHOULD NOT see this message unless you are still setting up linting."
    ```
+
+   `npm run format` reformats your code without doing any linting. `npm run lint-fix` automatically fixes some lint errors and reformats the code. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for a Git pre-commit hook or a CI/CD check.
 
    > Ideally, instead of `(eslint ... || true) && prettier ...`, we would use `eslint ... ; prettier ...`. However, there are some issues with using the semicolon as a command separator in Git Bash on Windows. See [this article](https://medium.com/@chillypenguin/running-node-npm-scripts-sequentially-on-windows-8737dc24da1f) for more details.
 
-   `npm run format` reformats your code without doing any linting. `npm run lint-fix` automatically fixes some lint errors and reformats the code. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for a Git pre-commit hook or a CI/CD check.
+   > At a later step in the setup, we'll change `npm run check-git-hooks` to actually check that Git hooks are installed. This will enforce that every developer has Git hooks installed (at least, every developer that tries to use one of the linting commands). We can't check for Git hooks in `prepare` because `prepare` also runs in production environments, and those might not have Git installed.
 
 1. Try it out:
 
@@ -135,9 +138,10 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 1. Add these scripts to your `package.json`:
 
    ```sh
-   npm pkg set scripts.format="prettier --write ."
-   npm pkg set scripts.lint-fix="(eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
-   npm pkg set scripts.lint-check="eslint --cache --report-unused-disable-directives . && prettier --check ."
+   npm pkg set scripts.check-git-hooks="echo Git hooks not configured yet. You SHOULD NOT see this message unless you are still setting up linting."
+   npm pkg set scripts.format="npm run check-git-hooks && prettier --write ."
+   npm pkg set scripts.lint-fix="npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
+   npm pkg set scripts.lint-check="npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
 
 1. Try it out:
@@ -169,9 +173,10 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 1. Add these scripts to your `package.json`:
 
    ```sh
-   npm pkg set scripts.format="prettier --write ."
-   npm pkg set scripts.lint-fix="(eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
-   npm pkg set scripts.lint-check="eslint --cache --report-unused-disable-directives . && prettier --check ."
+   npm pkg set scripts.check-git-hooks="echo Git hooks not configured yet. You SHOULD NOT see this message unless you are still setting up linting."
+   npm pkg set scripts.format="npm run check-git-hooks && prettier --write ."
+   npm pkg set scripts.lint-fix="npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
+   npm pkg set scripts.lint-check="npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check ."
    ```
 
 1. Remove the predefined `lint` script to avoid confusion:
@@ -194,9 +199,15 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
    ```sh
    npm install --save-dev husky
-   # If necessary, change ".." to the path to the repository's root directory.
-   npm set-script prepare "cd .. && husky install .husky"
+   # If necessary, change ".." in both commands to refer to the repository's root directory.
+   npm pkg set scripts.prepare="cd .. && husky install .husky"
+   npm pkg set scripts.check-git-hooks="cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks"
+
+   # Install Git hooks.
    npm run prepare
+
+   # Check that Git hooks were installed successfully.
+   npm run check-git-hooks
    ```
 
 1. Repeat the steps above for the frontend.

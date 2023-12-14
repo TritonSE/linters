@@ -170,7 +170,7 @@ function loadCache() {
         safeCommitHashes: asStringArray(parsed.safeCommitHashes),
       };
     } else {
-      console.error("Cache format is invalid, so it will not be used.");
+      console.log("Cache format is invalid, so it will not be used.");
       return null;
     }
   });
@@ -210,7 +210,7 @@ function saveReport(report) {
 }
 
 /**
- * @param {[string, ...string[]]} command
+ * @param {readonly [string, ...string[]]} command
  * @returns {string}
  */
 function runCommand(command) {
@@ -224,7 +224,7 @@ function runCommand(command) {
     return process.stdout;
   }
 
-  console.error(process);
+  console.log(process);
   throw new Error(`Command did not execute successfully: ${JSON.stringify(command)}`);
 }
 
@@ -239,9 +239,18 @@ function nonEmptyLines(text) {
 /** @returns {void} */
 function checkGitVersion() {
   const command = ["git", "--version"];
-  const output = runCommand(["git", "--version"]);
-  const expectedPrefix = "git version ";
 
+  let output;
+  try {
+    output = runCommand(["git", "--version"]);
+  } catch (e) {
+    console.log(e);
+    const msg =
+      "Could not run git from the command line. Make sure it is installed and on your PATH, and try again.";
+    throw new Error(msg);
+  }
+
+  const expectedPrefix = "git version ";
   if (!output.startsWith(expectedPrefix)) {
     const msg = `Output of command ${JSON.stringify(
       command
@@ -269,7 +278,36 @@ function getRepoRoot() {
 }
 
 /** @returns {number} */
-function main() {
+function checkGitHooks() {
+  checkGitVersion();
+
+  const expectedHooksPath = ".husky";
+  const command = /** @type {const} */ (["git", "config", "--get", "core.hooksPath"]);
+  const helpMsg = `Husky has not installed the required Git hooks. Run "npm run prepare" and try again.`;
+
+  let hooksPath;
+  try {
+    hooksPath = runCommand(command).replace(EOL, "");
+  } catch (e) {
+    console.log(e);
+    throw new Error(helpMsg);
+  }
+
+  if (hooksPath !== expectedHooksPath) {
+    const msg = [
+      `Command ${JSON.stringify(command)} returned ${JSON.stringify(
+        hooksPath
+      )}, expected ${JSON.stringify(expectedHooksPath)}.`,
+      helpMsg,
+    ].join("\n\n");
+    throw new Error(msg);
+  }
+
+  return 0;
+}
+
+/** @returns {number} */
+function runSecretScan() {
   const shouldSaveReport = process.env["SECRET_SCAN_WRITE_REPORT"] === "1";
 
   deleteReport();
@@ -439,6 +477,24 @@ function main() {
   } else {
     console.log("Secret scan completed successfully.");
     return 0;
+  }
+}
+
+/** @returns {number} */
+function main() {
+  let args = process.argv.slice(2);
+  if (args[0] === "--") {
+    args = args.slice(1);
+  }
+
+  switch (JSON.stringify(args)) {
+    case JSON.stringify([]):
+      return runSecretScan();
+    case JSON.stringify(["--check-git-hooks"]):
+      return checkGitHooks();
+    default:
+      const msg = `Invalid command-line arguments: ${JSON.stringify(args)}`;
+      throw new Error(msg);
   }
 }
 
