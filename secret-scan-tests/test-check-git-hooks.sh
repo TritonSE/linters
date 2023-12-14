@@ -7,6 +7,7 @@ setup_test
 
 path_to_node="$(which node)"
 oldpath="${PATH}"
+# shellcheck disable=SC2123
 PATH=''
 if "${path_to_node}" .secret-scan/secret-scan.js -- --check-git-hooks > expect-no-git.txt 2>&1; then
   echo "ERROR: check for git hooks passed when git is not available!"

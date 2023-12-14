@@ -96,7 +96,9 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
    > Ideally, instead of `(eslint ... || true) && prettier ...`, we would use `eslint ... ; prettier ...`. However, there are some issues with using the semicolon as a command separator in Git Bash on Windows. See [this article](https://medium.com/@chillypenguin/running-node-npm-scripts-sequentially-on-windows-8737dc24da1f) for more details.
 
-   > At a later step in the setup, we'll change `npm run check-git-hooks` to actually check that Git hooks are installed. This will enforce that every developer has Git hooks installed (at least, every developer that tries to use one of the linting commands). We can't check for Git hooks in `prepare` because `prepare` also runs in production environments, and those might not have Git installed.
+   > At a later step in the setup, we'll change `npm run check-git-hooks` to actually check that Git hooks are installed. This will enforce that every developer has Git hooks installed (at least, every developer that tries to use one of the linting commands).
+   >
+   > Running `npm install` or `npm run prepare` doesn't actually guarantee that the hooks are installed, because Husky will skip hook installation if Git is not available on the command line (e.g. for GitHub Desktop users). But these commands also need to run in production environments, which might not have Git installed, so we can't do the hook check there. Thus, we only do the hook check as part of the linting commands, which should never be run in production.
 
 1. Try it out:
 
@@ -217,6 +219,7 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
    ```sh
    npm install --save-dev husky
+
    # If necessary, change ".." in both commands to refer to the repository's root directory.
    npm pkg set scripts.prepare="cd .. && husky install .husky"
    npm pkg set scripts.check-git-hooks="cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks"
