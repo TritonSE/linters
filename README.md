@@ -204,7 +204,7 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
    <!-- IMPORTANT: if you modify the list of files below, update secret-scan-tests/common.sh as well. -->
 
    ```sh
-   for file in .husky/lint-config.sh .husky/pre-commit .husky/pre-push .secret-scan/.gitignore .secret-scan/secret-scan-config.json .secret-scan/secret-scan.js; do curl -o $file https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .husky/lint-config.sh .husky/pre-commit .husky/pre-push .secret-scan/.gitignore .secret-scan/secret-scan-config.json .secret-scan/secret-scan.js; do curl --create-dirs -o $file https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
 1. Open `.husky/lint-config.sh` in your editor of choice, and edit the `node_dirs` variable (if needed) to match your project's frontend and backend directories.
