@@ -80,7 +80,7 @@ function nullIfFileNotFound(callback) {
   try {
     return callback();
   } catch (e) {
-    if (typeof e === "object" && e !== null && "code" in e && e.code === "ENOENT") {
+    if (typeof e === "object" && e !== null && "code" in e && (e.code === "ENOENT" || e.code === "EISDIR")) {
       return null;
     }
     throw e;
