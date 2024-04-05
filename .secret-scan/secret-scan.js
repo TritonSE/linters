@@ -281,7 +281,7 @@ function getRepoRoot() {
 function checkGitHooks() {
   checkGitVersion();
 
-  const expectedHooksPath = ".husky";
+  const expectedHooksPath = ".husky/_";
   const command = /** @type {const} */ (["git", "config", "--get", "core.hooksPath"]);
   const helpMsg = `Husky has not installed the required Git hooks. Run "npm run prepare" and try again.`;
 
