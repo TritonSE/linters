@@ -86,10 +86,10 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 1. Add these scripts to your `package.json`:
 
    ```sh
+   npm pkg set scripts.check-git-hooks="echo Git hooks not configured yet. You SHOULD NOT see this message unless you are still setting up linting."
    npm pkg set scripts.format="npm run check-git-hooks && prettier --write ."
    npm pkg set scripts.lint-fix="npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write ."
    npm pkg set scripts.lint-check="npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check ."
-   npm pkg set scripts.check-git-hooks="echo Git hooks not configured yet. You SHOULD NOT see this message unless you are still setting up linting."
    ```
 
    `npm run format` reformats your code without doing any linting. `npm run lint-fix` automatically fixes some lint errors and reformats the code. `npm run lint-check` doesn't modify any files, and exits non-zero if there are any lint errors or code style discrepancies; this is intended for a Git pre-commit hook or a CI/CD check.
