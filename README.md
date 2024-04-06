@@ -221,7 +221,7 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
    npm install --save-dev husky
 
    # If necessary, change ".." in both commands to refer to the repository's root directory.
-   npm pkg set scripts.prepare="cd .. && husky install .husky"
+   npm pkg set scripts.prepare="cd .. && husky"
    npm pkg set scripts.check-git-hooks="cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks"
 
    # Install Git hooks.
