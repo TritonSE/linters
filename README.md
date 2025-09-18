@@ -96,7 +96,7 @@ Note: different settings can also be applied to the backend and frontend by plac
 1. Download some config files from this repository:
 
    ```sh
-   for file in .prettierignore prettier.config.mjs eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
 1. Add these scripts to your `package.json`:

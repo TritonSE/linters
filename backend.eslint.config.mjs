@@ -28,7 +28,6 @@ export default antfu({
       "ts/no-shadow": ["error", { ignoreTypeValueShadow: true }],
       "ts/no-unsafe-unary-minus": "error",
       "ts/no-unused-expressions": "error",
-      "ts/switch-exhaustiveness-check": "error",
 
       // Stylistic
       "ts/consistent-type-definitions": ["warn", "type"],
