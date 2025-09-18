@@ -32,6 +32,8 @@ A VSCode settings file is strongly recommended to ensure that everyone has the s
 - Create a `settings.json` file inside it.
 - Copy the contents of [.vscode/settings.json](.vscode/settings.json) into your `settings.json` file.
 
+Note: different settings can also be applied to the backend and frontend by placing a `.vscode/settings.json` file in each of those directories instead of the root directory. This should not be necessary for most projects.
+
 ### ESLint and Prettier
 
 #### For Node.js Backends
