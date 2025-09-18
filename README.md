@@ -21,8 +21,15 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 1. Download the template:
 
    ```sh
-   curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore
+   curl -o .gitignore https://raw.githubusercontent.com/TritonSE/linters/main/.gitignore
    ```
+
+### `.vscode/settings.json`
+
+A VSCode settings file is strongly recommended to ensure that everyone has the same editor and formatting settings in VSCode. Editor settings can mess with ESLint and Prettier and are usually very hard to debug. 
+- Create a `.vscode` directory in your project's root directory.
+- Create a `settings.json` file inside it.
+- Copy the contents of [.vscode/settings.json](.vscode/settings.json) into your `settings.json` file.
 
 ### ESLint and Prettier
 
@@ -30,58 +37,21 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
 1. `cd` into your backend directory.
 
+1. Install necessary packages:
+
+   ```sh
+   npm install --save-dev eslint prettier @antfu/eslint-config
+   ```
+
 1. Download some config files from this repository:
 
    ```sh
-   for file in .eslintignore .prettierignore .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.js backend.eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
-1. Install the necessary packages:
+1. Rename `backend.eslint.config.mjs` to `eslint.config.mjs`.
 
-   ```sh
-   npm install --save-dev eslint eslint-config-prettier eslint-plugin-import prettier
-   ```
-
-1. Create a baseline ESLint config:
-
-   ```sh
-   npm init @eslint/config
-   ```
-
-   Answer the prompts as follows:
-
-   <dl>
-     <dt>How would you like to use ESLint?</dt>
-     <dd>To check syntax and find problems</dd>
-     <dt>What type of modules does your project use?</dt>
-     <dd>Answer as appropriate.</dd>
-     <dt>What framework does your project use?</dt>
-     <dd>None of these (since this is the backend)</dd>
-     <dt>Does your project use TypeScript?</dt>
-     <dd>Yes</dd>
-     <dt>Where does your code run?</dt>
-     <dd>Node (tip: press <kbd>i</kbd> to toggle)</dd>
-     <dt>What format do you want your config file to be in?</dt>
-     <dd>JSON</dd>
-   </dl>
-
-   If you are asked to install any dependencies, install them. If you answer a prompt incorrectly, you can simply rerun the command to try again.
-
-1. Edit the generated `.eslintrc.json` to include [these changes](backend.eslintrc.json).
-
-1. If your frontend is in a subdirectory of the backend, you'll need to follow some additional instructions to ensure that the frontend and backend are linted separately.
-
-   1. Backend:
-
-      Add the frontend directory to an `.eslintignore` file (replace `frontend` with the name of your frontend directory):
-
-      ```sh
-      echo frontend >> .eslintignore
-      ```
-
-   1. Frontend:
-
-      Add `"root": true` to your `.eslintrc.json` to avoid using the backend's ESLint config for the frontend. See [this link](https://eslint.org/docs/user-guide/configuring/configuration-files#cascading-and-hierarchy) for more details.
+1. If your frontend is in a subdirectory of the backend, you'll need to add `"frontend/"` to the `ignores` array in the `eslint.config.mjs` file (replace `frontend` with the name of your frontend directory) to ensure that the frontend and backend are linted separately.
 
 1. Add these scripts to your `package.json`:
 
@@ -112,30 +82,18 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
 1. `cd` into your frontend directory.
 
-1. If you already set up ESLint when you created the project, you should have a `.eslintrc.json` file already, and you can skip this step.
+1. Install necessary dependencies 
+    ```sh
+    npm install --save-dev eslint prettier @antfu/eslint-config 
+    ```
 
-   Otherwise, run `npx next lint` to generate `.eslintrc.json` ([docs](https://nextjs.org/docs/app/building-your-application/configuring/eslint)), and answer the prompt as follows:
-
-   <dl>
-     <dt>How would you like to configure ESLint?</dt>
-     <dd>Strict</dd>
-   </dl>
-
-   If there is still no `.eslintrc.json`, see [this workaround](https://github.com/vercel/next.js/issues/50761#issuecomment-1666057683).
+1. If you already set up ESLint when you created the project, you should have a `eslint.config.mjs`, in which case, you should replace the contents of that file with [this file](nextjs.eslint.config.mjs). If you don't have an `eslint.config.mjs` file, download [this file](nextjs.eslint.config.mjs) and rename it to `eslint.config.mjs`.
 
 1. Download some config files from this repository:
 
    ```sh
-   for file in .eslintignore .prettierignore .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.js eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
-
-1. Install the necessary packages:
-
-   ```sh
-   npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-next eslint-config-prettier eslint-plugin-import prettier
-   ```
-
-1. Edit `.eslintrc.json` to include [these changes](nextjs.eslintrc.json).
 
 1. Add these scripts to your `package.json`:
 
@@ -161,16 +119,16 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 1. Download some config files from this repository:
 
    ```sh
-   for file in .eslintignore .prettierignore .prettierrc.json; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.json vite.eslint.config.js; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
+
+1. Rename `vite.eslint.config.js` to `eslint.config.mjs`.
 
 1. Install the necessary packages:
 
    ```sh
-   npm install --save-dev eslint-plugin-react eslint-plugin-jsx-a11y eslint-config-prettier eslint-plugin-import prettier
+   npm install --save-dev eslint prettier @antfu/eslint-config
    ```
-
-1. Edit `.eslintrc.cjs` to include [these changes](vite.eslintrc.cjs).
 
 1. Add these scripts to your `package.json`:
 
