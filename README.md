@@ -26,7 +26,8 @@ Initialize your repository's `.gitignore` with the Node.js template from [`githu
 
 ### `.vscode/settings.json`
 
-A VSCode settings file is strongly recommended to ensure that everyone has the same editor and formatting settings in VSCode. Editor settings can mess with ESLint and Prettier and are usually very hard to debug. 
+A VSCode settings file is strongly recommended to ensure that everyone has the same editor and formatting settings in VSCode. Editor settings can mess with ESLint and Prettier and are usually very hard to debug.
+
 - Create a `.vscode` directory in your project's root directory.
 - Create a `settings.json` file inside it.
 - Copy the contents of [.vscode/settings.json](.vscode/settings.json) into your `settings.json` file.
@@ -46,7 +47,7 @@ A VSCode settings file is strongly recommended to ensure that everyone has the s
 1. Download some config files from this repository:
 
    ```sh
-   for file in .prettierignore prettier.config.js backend.eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.mjs backend.eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
 1. Rename `backend.eslint.config.mjs` to `eslint.config.mjs`.
@@ -82,17 +83,18 @@ A VSCode settings file is strongly recommended to ensure that everyone has the s
 
 1. `cd` into your frontend directory.
 
-1. Install necessary dependencies 
-    ```sh
-    npm install --save-dev eslint prettier @antfu/eslint-config 
-    ```
+1. Install necessary dependencies
+
+   ```sh
+   npm install --save-dev eslint prettier @antfu/eslint-config
+   ```
 
 1. If you already set up ESLint when you created the project, you should have a `eslint.config.mjs`, in which case, you should replace the contents of that file with [this file](nextjs.eslint.config.mjs). If you don't have an `eslint.config.mjs` file, download [this file](nextjs.eslint.config.mjs) and rename it to `eslint.config.mjs`.
 
 1. Download some config files from this repository:
 
    ```sh
-   for file in .prettierignore prettier.config.js eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.mjs eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
 1. Add these scripts to your `package.json`:
@@ -119,10 +121,10 @@ A VSCode settings file is strongly recommended to ensure that everyone has the s
 1. Download some config files from this repository:
 
    ```sh
-   for file in .prettierignore prettier.config.json vite.eslint.config.js; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
+   for file in .prettierignore prettier.config.mjs vite.eslint.config.mjs; do curl -O https://raw.githubusercontent.com/TritonSE/linters/main/$file; done
    ```
 
-1. Rename `vite.eslint.config.js` to `eslint.config.mjs`.
+1. Rename `vite.eslint.config.mjs` to `eslint.config.mjs`.
 
 1. Install the necessary packages:
 

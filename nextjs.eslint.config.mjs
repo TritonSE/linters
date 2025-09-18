@@ -12,10 +12,9 @@ export default antfu({
     "**/out/**/",
     "public/",
     "**/public/**/",
-    "next.config.js",
-    "**/next.config.js/**",
-    "vite.config.ts",
-    "**/vite.config.ts/**",
+    "**/next.config.js",
+    "**/vite.config.ts",
+    "**/vite-env.d.ts",
   ],
 
   nextjs: true,
@@ -26,22 +25,50 @@ export default antfu({
   // Enables type aware rules
   typescript: {
     tsconfigPath: "tsconfig.json",
+    overrides: {
+      // Avoid bugs
+      "ts/no-shadow": ["error", { ignoreTypeValueShadow: true }],
+      "ts/no-unsafe-unary-minus": "error",
+      "ts/no-unused-expressions": "error",
+      "ts/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "ts/switch-exhaustiveness-check": "error",
+
+      // Stylistic
+      "ts/consistent-type-definitions": ["warn", "type"],
+      "ts/no-use-before-define": "warn",
+      "ts/prefer-readonly": "warn",
+      "ts/prefer-regexp-exec": "warn",
+    },
   },
 
   rules: {
     // Avoid bugs
-    "ts/no-shadow": ["error", { ignoreTypeValueShadow: true }],
-    "ts/no-unsafe-unary-minus": "error",
-    "ts/no-unused-expressions": "error",
-    "ts/no-unused-vars": [
-      "error",
+    "unused-imports/no-unused-imports": [
+      "warn",
       {
+        varsIgnorePattern: "^_",
         argsIgnorePattern: "^_",
         destructuredArrayIgnorePattern: "^_",
-        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
       },
     ],
-    "ts/switch-exhaustiveness-check": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        destructuredArrayIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      },
+    ],
     "array-callback-return": "error",
     eqeqeq: "error",
     "no-await-in-loop": "error",
@@ -58,10 +85,7 @@ export default antfu({
     "no-template-curly-in-string": "error",
 
     // Stylistic.
-    "ts/consistent-type-definitions": ["warn", "type"],
-    "ts/no-use-before-define": "warn",
-    "ts/prefer-readonly": "warn",
-    "ts/prefer-regexp-exec": "warn",
+    "node/prefer-global/process": ["error", "always"],
     "object-shorthand": ["warn", "properties"],
     "import/consistent-type-specifier-style": ["warn", "prefer-top-level"],
     "perfectionist/sort-imports": [
@@ -72,11 +96,23 @@ export default antfu({
       },
     ],
     "perfectionist/sort-named-imports": ["warn"],
-    "no-console": "warn",
+    "no-console": [
+      "warn",
+      {
+        allow: ["warn", "error", "info"],
+      },
+    ],
     "no-case-declarations": "off",
 
     // Disabled because of too many false positives.
-    "@typescript-eslint/no-unnecessary-condition": "off",
+    "ts/strict-boolean-expressions": "off",
+    "ts/no-unnecessary-condition": "off",
+    "ts/switch-exhaustiveness-check": "off",
+    "ts/return-await": "off", // Has parsing bug with nested async functions
+    "jsdoc/check-param-names": "off",
     "react-hooks/exhaustive-deps": "off",
+    "react/no-leaked-conditional-rendering": "off",
+    "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
+    "react-hooks-extra/no-direct-set-state-in-use-layout-effect": "off",
   },
 });
